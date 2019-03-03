@@ -32,8 +32,8 @@ namespace TicTacToe_Client
         bool winner = false;
         private PictureBox GetPicByPos(int i, int j)
         {
-            if ( i == 1 )
-                switch ( j )
+            if (i == 1)
+                switch (j)
                 {
                     case 1: return pictureBox1;
                     case 2: return pictureBox2;
@@ -76,7 +76,7 @@ namespace TicTacToe_Client
                     label3.Text = "Ходит Ваш оппонент";
                 winner = false;
             }));
-            
+
         }
 
         private void pictureBox9_Click(object sender, EventArgs e)
@@ -126,7 +126,7 @@ namespace TicTacToe_Client
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            a = new int[10,10];
+            a = new int[10, 10];
             Reset();
             for (int i = 1; i <= 3; ++i)
                 for (int j = 1; j <= 3; ++j)
@@ -134,11 +134,11 @@ namespace TicTacToe_Client
         }
         private void Handler_Click(int i, int j)
         {
-            if (my_turn && a[i,j] == 0 )
+            if (my_turn && a[i, j] == 0)
             {
                 GetPicByPos(i, j).Image = imageList1.Images[2];
                 a[i, j] = 2;
-                if ( Winner() )
+                if (Winner())
                 {
                     button2.Visible = true;
                     for (int ii = 1; ii <= 3; ++ii)
@@ -150,17 +150,17 @@ namespace TicTacToe_Client
                 bw.Write(i * 10 + j);
                 bw.Flush();
                 my_turn = false;
-                if ( !winner )
+                if (!winner)
                     label3.Text = "Ходит Ваш оппонент";
             }
-            
+
         }
         private bool Winner()
         {
             // проверяем каждую строку            
-            for ( int i = 1; i <= 3; ++i )
+            for (int i = 1; i <= 3; ++i)
             {
-                if ( a[i,1] == a[i,2] && a[i,2] == a[i,3] && a[i,1] != 0 )
+                if (a[i, 1] == a[i, 2] && a[i, 2] == a[i, 3] && a[i, 1] != 0)
                 {
                     Handler_Winner(a[i, 1], 1, i);
                     return true;
@@ -169,31 +169,31 @@ namespace TicTacToe_Client
             // столбец
             for (int j = 1; j <= 3; ++j)
             {
-                if (a[1, j] == a[2, j] && a[2, j] == a[3,j] && a[1,j] != 0)
+                if (a[1, j] == a[2, j] && a[2, j] == a[3, j] && a[1, j] != 0)
                 {
                     Handler_Winner(a[1, j], 2, j);
                     return true;
                 }
             }
             // главная диагональ
-            if (a[1, 1] == a[2, 2] && a[2, 2] == a[3,3] && a[1,1] != 0 )
+            if (a[1, 1] == a[2, 2] && a[2, 2] == a[3, 3] && a[1, 1] != 0)
             {
                 Handler_Winner(a[1, 1], 3, 1);
                 return true;
             }
 
-            if (a[1, 3] == a[2, 2] && a[2, 2] == a[3,1] && a[1,3] != 0 )
+            if (a[1, 3] == a[2, 2] && a[2, 2] == a[3, 1] && a[1, 3] != 0)
             {
                 Handler_Winner(a[1, 3], 3, 2);
                 return true;
             }
             // Ничья
             bool draw = true;
-            for ( int i =1 ; i <= 3; ++i )
-                for (int j = 1; j <= 3; ++j )
-                    if ( a[i,j] == 0 )
+            for (int i = 1; i <= 3; ++i)
+                for (int j = 1; j <= 3; ++j)
+                    if (a[i, j] == 0)
                         draw = false;
-            if ( draw )
+            if (draw)
             {
                 UpdateScor();
                 this.Invoke(new Action(() => { label3.Text = "Ничья"; }));
@@ -214,17 +214,17 @@ namespace TicTacToe_Client
             if (tip == 1)
                 for (int i = 1; i <= 3; ++i)
                     GetPicByPos(v, i).Image = imageList1.Images[nr];
-            if ( tip == 2 )
-                for ( int i = 1; i <= 3; ++i )
+            if (tip == 2)
+                for (int i = 1; i <= 3; ++i)
                     GetPicByPos(i, v).Image = imageList1.Images[nr];
-            if ( tip == 3 )
+            if (tip == 3)
             {
-                if ( v == 1 )
-                    for ( int i = 1; i <= 3; ++i )
+                if (v == 1)
+                    for (int i = 1; i <= 3; ++i)
                         GetPicByPos(i, i).Image = imageList1.Images[nr];
                 else
                     for (int i = 1; i <= 3; ++i)
-                        GetPicByPos(i, 4-i).Image = imageList1.Images[nr];
+                        GetPicByPos(i, 4 - i).Image = imageList1.Images[nr];
             }
             nr -= 2;
             if (nr == 1)
@@ -242,24 +242,35 @@ namespace TicTacToe_Client
                 label2.Text = "Игрок №2: " + scor2.ToString();
                 label4.Text = "Всего: " + total.ToString();
             }));
-            
+
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            Thread ConnectionThread = new Thread(Connection);
-            ConnectionThread.IsBackground = true;
-            ConnectionThread.Start();
-            button1.Enabled = false;
-            button1.Text = "Поиск...";
+            try
+            {
+                Thread ConnectionThread = new Thread(Connection);
+                ConnectionThread.IsBackground = true;
+                ConnectionThread.Start();
+                button1.Enabled = false;
+                button1.Text = "Поиск...";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private void Connection()
         {
-            while ( true )
+            while (true)
             {
                 try
                 {
                     client = new TcpClient();
-                    if (!client.ConnectAsync("127.0.0.1", 8003).Wait(4000)) // "31.5.88.5", 1260
+
+                    int port;
+                    int.TryParse(tbxPort.Text, out port);
+
+                    if (!client.ConnectAsync(tbxIP.Text, port).Wait(4000))
                         continue;
                     stream = client.GetStream();
                     br = new BinaryReader(stream);
@@ -277,19 +288,22 @@ namespace TicTacToe_Client
                     }));
                     return;
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
                 Thread.Sleep(10);
             }
         }
         private void Handler()
         {
             int type = 0, nr = 0;
-            while ( true )
+            while (true)
             {
                 try
                 {
                     type = br.ReadInt32();
-                    if ( type == 1) // позиция
+                    if (type == 1) // позиция
                     {
                         nr = br.ReadInt32();
                         if (a[nr / 10, nr % 10] != 0)
@@ -305,15 +319,15 @@ namespace TicTacToe_Client
                                     for (int jj = 1; jj <= 3; ++jj)
                                         GetPicByPos(ii, jj).Enabled = false;
                                 winner = true;
-                            }));                  
+                            }));
                         }
                         my_turn = true;
-                        if ( !winner )
+                        if (!winner)
                             this.Invoke(new Action(() => { label3.Text = "Ваша очередь ходить"; }));
                     }
-                    if ( type == 2 )
+                    if (type == 2)
                     {
-                        this.Invoke(new Action(() => 
+                        this.Invoke(new Action(() =>
                         {
                             label3.Text = "Новая игра";
                             if (i_want)
@@ -327,20 +341,20 @@ namespace TicTacToe_Client
                     }
                     if (type == 3)
                         Reset();
-                    
+
                 }
                 catch
                 {
                     MessageBox.Show(@"Ошибка ¯\_(ツ)_/¯ ");
                     Application.Exit();
                 }
-                
+
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            label3.Text = "Дождитесь подтверждения";
+            label3.Text = "Дождитесь\nподтверждения";
             i_want = true;
             bw.Write(2);
             bw.Flush();
